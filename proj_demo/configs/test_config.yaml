@@ -1,0 +1,11 @@
+cuda: True
+ngpu: 1
+gpu_id: '7'
+data_dir: /home/lih/RemoteRepo/VA_Project/Train     # Your dataset path
+video_flist: '/home/lih/RemoteRepo/VA_Project/proj_demo/filelists/Video_Name_List.txt'
+audio_flist: '/home/lih/RemoteRepo/VA_Project/proj_demo/filelists/Audio_Name_List.txt'
+workers: 4
+batchSize: 40
+checkpoint_folder: /home/lih/RemoteRepo/VA_Project/proj_demo/checkpoints
+init_model: '/home/lih/RemoteRepo/VA_Project/proj_demo/checkpoints/VA_METRIC_state_epoch40.pth'
+topk: 5
