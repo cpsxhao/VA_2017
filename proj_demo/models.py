@@ -187,8 +187,8 @@ class ContrastiveLoss(torch.nn.Module):
         loss = torch.mean((1-label) * torch.pow(dist, 2) +
                 (label) * torch.pow(torch.clamp(self.margin - dist, min=0.0), 2))
 
-        #loss = torch.mean((1 - label) * dist +
-        #        (label) * torch.clamp(self.margin - dist, min=0.0))
+        #loss = torch.mean((1 - label) * torch.log(dist) +
+        #        (label) * torch.log(torch.clamp(self.margin - dist, min=0.0)))
         return loss
 
 
