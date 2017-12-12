@@ -1,3 +1,3 @@
-# #!/usr/bin/env python
+#!/usr/bin/env python
 
 # 采用20折交叉验证，将训练集1300划分为20个大小为65的子集，依然采用 Top5 准确率作为评估标准
