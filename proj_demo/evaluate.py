@@ -10,8 +10,10 @@ from optparse import OptionParser
 import torch
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
+import torch.nn.functional as F
 
 import models
+import modelsLY
 from dataset import VideoFeatDataset as dset
 from tools.config_tools import Config
 from tools import utils
@@ -90,6 +92,54 @@ def test(video_loader, audio_loader, model, opt):
                     right = right + 1
             print('The similarity matrix: \n {}'.format(simmat))
             print('Testing accuracy (top{}): {:.3f}'.format(opt.topk, right/bz))
+def testv2(video_loader, audio_loader, model, opt):
+    """
+    train for one epoch on the training set
+    """
+    # training mode
+    model.eval()
+
+    sim_mat = []
+    right = 0
+    for _, vfeat in enumerate(video_loader):
+        for _, afeat in enumerate(audio_loader):
+            # transpose feats
+            #vfeat = vfeat.transpose(2,1)
+            #afeat = afeat.transpose(2,1)
+
+            # shuffling the index orders
+            bz = vfeat.size()[0]
+            for k in np.arange(bz):
+                cur_vfeat = vfeat[k].clone()
+                cur_vfeats = cur_vfeat.repeat(bz, 1, 1)
+
+                vfeat_var = Variable(cur_vfeats)
+                afeat_var = Variable(afeat)
+
+                if opt.cuda:
+                    vfeat_var = vfeat_var.cuda()
+                    afeat_var = afeat_var.cuda()
+                #print('dalong log : check input size ',vfeat_var.size(),afeat_var.size())
+                cur_sim = model.forward(vfeat_var, afeat_var,afeat_var)
+                #print('dalong log : check output size ', cur_sim[0].size())
+
+                cur_sim = F.pairwise_distance(cur_sim[0],cur_sim[1])
+                #print('dalong log : check sim size ', cur_sim.size());
+                #exit();
+                if k == 0:
+                    simmat = cur_sim.clone()
+                else:
+                    simmat = torch.cat((simmat, cur_sim), 1)
+            sorted, indices = torch.sort(simmat, 0)
+            np_indices = indices.cpu().data.numpy()
+            topk = np_indices[:opt.topk,:]
+            for k in np.arange(bz):
+                order = topk[:,k]
+                if k in order:
+                    right = right + 1
+            print('The similarity matrix: \n {}'.format(simmat))
+            print('Testing accuracy (top{}): {:.3f}'.format(opt.topk, right/bz))
+            return right/bz
 
 def main():
     global opt
@@ -100,7 +150,7 @@ def main():
                                      shuffle=False, num_workers=int(opt.workers))
 
     # create model
-    model = models.VGGLikeFC()
+    model = models.ImageBasedFC()
 
     if opt.init_model != '':
         print('loading pretrained model from {0}'.format(opt.init_model))
@@ -110,7 +160,7 @@ def main():
         print('shift model to GPU .. ')
         model = model.cuda()
 
-    test(test_video_loader, test_audio_loader, model, opt)
+    testv2(test_video_loader, test_audio_loader, model, opt)
 
 
 if __name__ == '__main__':

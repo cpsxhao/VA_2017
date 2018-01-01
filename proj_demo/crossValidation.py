@@ -104,4 +104,4 @@ for iter in range(FoldNum):
         print('shift model to GPU .. ')
         model = model.cuda()            
     
-    evaluate.test(test_video_loader, test_audio_loader, model, opt)
+    eva.test(test_video_loader, test_audio_loader, model, opt)

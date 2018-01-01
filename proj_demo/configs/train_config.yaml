@@ -6,18 +6,15 @@ data_dir: /home/lih/RemoteRepo/VA_Project/Train         # replace it as your dat
 flist: '/home/lih/RemoteRepo/VA_Project/proj_demo/filelists/train_filelist.txt'
 workers: 4
 batchSize: 64
-manualSeed: 
-adam: True
-lr: 0.001
-lr_decay: 0.7
-lr_decay_epoch: 10
-momentum: 0.9
-weight_decay: 0.0001
+manualSeed:
+lr: 0.00005
+weight_decay: 0.0005
 max_epochs: 300
-print_freq: 15
-epoch_save: 10
-checkpoint_folder: /home/lih/RemoteRepo/VA_Project/proj_demo/checkpoints
+print_freq: 10
+epoch_save: 5
+checkpoint_folder: /home/lih/RemoteRepo/VA_Project/proj_demo/checkpointsIBFC
 prefix: 'VA_METRIC'
-model: ''
+model: 'IBFC'
+margin: 0.5
 gradient_clip: 0.01
 init_model: ''
